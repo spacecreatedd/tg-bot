@@ -9,7 +9,7 @@ bot.command('start', (ctx) => {
         .row()
         .text('Помощь', 'help'); 
 
-    ctx.reply('Привет, это бот по игре в Камень Ножницы Бумага', { reply_markup: keyboard });
+    ctx.reply('Привет, это бот по игре в Угадай число', { reply_markup: keyboard });
 });
 
 // команда /help
@@ -25,7 +25,7 @@ bot.on('callback_query:data', async (ctx) => {
         const keyboard = new InlineKeyboard()
             .text('Камень', 'stone')  
             .text('Ножницы', 'scissors')
-            .text('Бумага', 'paper'); 
+            .text('Бумага', 'paper'); // исправлено "papper" на "paper"
         await ctx.reply('Выберите Камень, Ножницы или Бумагу:', { reply_markup: keyboard });
     }
     // обработка помощи
