@@ -5,16 +5,16 @@ const bot = new Bot('7705697814:AAHn-EmR0g2rdbUPP0Mq0lr1urHnLYOy5pQ');
 // команда /start
 bot.command('start', (ctx) => {
     const keyboard = new InlineKeyboard()
-        .text('Играть', 'play') 
+        .text('Играть', 'play')
         .row()
-        .text('Помощь', 'help'); 
+        .text('Помощь', 'help');
 
-    ctx.reply('Привет, это бот по игре в Угадай число', { reply_markup: keyboard });
+    ctx.reply('Привет, это бот по игре "Угадай число". Напиши /help для получения инструкций.', { reply_markup: keyboard });
 });
 
 // команда /help
 bot.command('help', (ctx) => {
-    ctx.reply('Чтобы начать игру, используйте команду /start');
+    ctx.reply('Чтобы начать игру, используйте команду /start. Напишите число от 0 до 10 и попробуйте угадать число бота.');
 });
 
 // обработка нажатий кнопок
@@ -22,44 +22,43 @@ bot.on('callback_query:data', async (ctx) => {
     const data = ctx.callbackQuery.data;
 
     if (data === 'play') {
-        const keyboard = new InlineKeyboard()
-            .text('Камень', 'stone')  
-            .text('Ножницы', 'scissors')
-            .text('Бумага', 'paper'); // исправлено "papper" на "paper"
-        await ctx.reply('Выберите Камень, Ножницы или Бумагу:', { reply_markup: keyboard });
+        // начинаем игру, спрашиваем у пользователя число
+        await ctx.reply('Напишите число от 0 до 10 включительно:');
     }
     // обработка помощи
     else if (data === 'help') {
         await ctx.answerCallbackQuery();
-        await ctx.reply('Чтобы начать игру, используйте команду /start. Выберите "Играть", затем выберите Камень, Ножницы или Бумагу.');
+        await ctx.reply('Чтобы начать игру, используйте команду /start. Напишите число от 0 до 10 и попробуйте угадать число бота.');
     }
-    // обработка выбора пользователя
-    else if (data === 'stone' || data === 'scissors' || data === 'paper') {
-        const chose = ['Камень', 'Ножницы', 'Бумага'];
-        const result = chose[Math.floor(Math.random() * chose.length)];
+    // обработка выхода
+    else if (data === 'exit') {
+        await ctx.reply('GG!');
+    }
+});
 
-        // обработка выигрыша, ничьи и проигрыша
-        if (result === 'Камень' && data === 'stone' ||
-            result === 'Ножницы' && data === 'scissors' ||
-            result === 'Бумага' && data === 'paper') {
-            await ctx.reply(`Ничья! Оба выбрали ${result}`);
-        } else if (
-            (result === 'Камень' && data === 'scissors') ||
-            (result === 'Ножницы' && data === 'paper') ||
-            (result === 'Бумага' && data === 'stone')) {
-            await ctx.reply(`Вы проиграли, бот выбрал ${result}`);
+// обработка входящего текста (числа от 0 до 10)
+bot.on('message:text', async (ctx) => {
+    const userInput = ctx.message.text.trim();
+
+    const userGuess = parseInt(userInput);
+
+    if (isNaN(userGuess) || userGuess < 0 || userGuess > 10) {
+        await ctx.reply('Введите число от 0 до 10 включительно.');
+    } else {
+        const result = Math.floor(Math.random() * 11);
+
+        // проверка, угадал ли пользователь число
+        if (userGuess === result) {
+            await ctx.reply(`Вы угадали, бот выбрал ${result}.`);
         } else {
-            await ctx.reply(`Вы выиграли, бот выбрал ${result}`);
+            await ctx.reply(`Вы проиграли, бот выбрал ${result}.`);
         }
 
         const replayKeyboard = new InlineKeyboard()
             .text('Играть снова', 'play')
             .text('Выйти', 'exit');
 
-        await ctx.reply('Хотите сыграть еще раз?', { reply_markup: replayKeyboard });
-    }
-    else if (data === 'exit') {
-        await ctx.reply('GG!');
+        await ctx.reply('Хотите сыграть снова?', { reply_markup: replayKeyboard });
     }
 });
 
