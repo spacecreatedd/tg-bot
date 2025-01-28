@@ -1,3 +1,8 @@
+require('dotenv').config(); // Загружаем переменные из .env файла
+
+const port = process.env.PORT || 3000; // Используем порт из переменной или ставим 3000 по умолчанию
+const debugMode = process.env.DEBUG === 'true'; // Преобразуем строку в булевое значение
+
 const { Bot, InlineKeyboard } = require('grammy');
 
 const bot = new Bot('7705697814:AAHn-EmR0g2rdbUPP0Mq0lr1urHnLYOy5pQ');
@@ -63,4 +68,5 @@ bot.on('message:text', async (ctx) => {
 });
 
 bot.start();
-console.log('Бот запущен...');
+console.log(`Сервер запущен на порту: ${port}`);
+console.log(`Режим отладки: ${debugMode ? 'Включен' : 'Выключен'}`);
